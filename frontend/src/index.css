@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        @apply antialiased scroll-smooth;
+    }
+
+    body {
+        @apply bg-surface-900 text-white font-sans;
+    }
+
+    /* Custom Scrollbar — Dark */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-white/10 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-white/20;
+    }
+}
+
+@layer components {
+
+    /* Glass Card */
+    .glass {
+        @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
+    }
+
+    .glass-sm {
+        @apply bg-white/[0.06] backdrop-blur-md border border-white/[0.1] rounded-xl;
+    }
+
+    .glass-strong {
+        @apply bg-white/[0.08] backdrop-blur-2xl border border-white/[0.12] rounded-2xl;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+        @apply w-10 h-10 border-4 border-white/10 border-l-accent-500 rounded-full animate-spin;
+    }
+
+    /* Gradient Text */
+    .text-gradient {
+        @apply bg-gradient-to-r from-accent-400 to-accent-300 bg-clip-text text-transparent;
+    }
+
+    .text-gradient-violet {
+        @apply bg-gradient-to-r from-violet-400 to-accent-400 bg-clip-text text-transparent;
+    }
+
+    /* Speaking Ring Animation */
+    .speaking-ring {
+        animation: speakingRing 1.5s ease-in-out infinite;
+    }
+
+    /* Role Badge Colors */
+    .badge-host {
+        @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+    }
+
+    .badge-cohost {
+        @apply bg-violet-500/20 text-violet-400 border border-violet-500/30;
+    }
+
+    .badge-speaker {
+        @apply bg-accent-500/20 text-accent-400 border border-accent-500/30;
+    }
+
+    .badge-listener {
+        @apply bg-white/[0.06] text-white/40 border border-white/[0.08];
+    }
+
+    /* Input Dark */
+    .input-dark {
+        @apply w-full px-4 py-3 bg-white/[0.04] border border-white/[0.1] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-500/50 transition-all duration-200;
+    }
+
+    /* Button Primary */
+    .btn-primary {
+        @apply px-6 py-3 bg-gradient-to-r from-accent-600 to-accent-500 text-white font-semibold rounded-xl shadow-glow-accent-sm hover:shadow-glow-accent hover:from-accent-500 hover:to-accent-400 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+    }
+
+    /* Button Ghost */
+    .btn-ghost {
+        @apply px-4 py-2.5 text-white/60 font-medium rounded-xl hover:bg-white/[0.06] hover:text-white/80 transition-all duration-200;
+    }
+}

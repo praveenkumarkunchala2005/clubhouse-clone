@@ -1,0 +1,66 @@
+services:
+  # ---- LiveKit SFU Server ----
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: founderstribe-livekit
+    command: --config /livekit.yaml
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "50000-50060:50000-50060/udp"
+    volumes:
+      - ./livekit.yaml:/livekit.yaml
+      - ./certs:/certs:ro
+    restart: unless-stopped
+    networks:
+      - founderstribe-net
+
+  # ---- Redis ----
+  redis:
+    image: redis:7-alpine
+    container_name: founderstribe-redis
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - founderstribe-net
+
+  # ---- Backend API ----
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: founderstribe-backend
+    env_file:
+      - ./backend/.env.production
+    depends_on:
+      - redis
+      - livekit
+    restart: unless-stopped
+    networks:
+      - founderstribe-net
+
+  # ---- Caddy (Web Server + Reverse Proxy + SSL) ----
+  caddy:
+    image: caddy:2-alpine
+    container_name: founderstribe-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./frontend/dist:/srv # Mount built frontend assets
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+      - livekit
+    networks:
+      - founderstribe-net
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  founderstribe-net:

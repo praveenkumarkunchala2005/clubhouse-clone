@@ -1,0 +1,56 @@
+services:
+  # ---- LiveKit SFU Server ----
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: founderstribe-livekit
+    ports:
+      - "7880:7880" # HTTP / WebSocket
+      - "7881:7881" # RTC over TCP
+      - "50000-50060:50000-50060/udp" # WebRTC UDP
+    volumes:
+      - ./livekit.yaml:/livekit.yaml
+      - ./certs:/certs:ro
+    command: --config /livekit.yaml
+    restart: unless-stopped
+
+  # ---- Redis (Socket.io adapter + caching) ----
+  redis:
+    image: redis:7-alpine
+    container_name: founderstribe-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---- Backend API Server ----
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: founderstribe-backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+      livekit:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis_data:

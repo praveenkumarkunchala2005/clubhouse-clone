@@ -1,0 +1,23 @@
+{
+    email admin@34.59.252.209.nip.io
+}
+
+34.59.252.209.nip.io {
+    root * /srv
+    encode gzip
+    file_server
+    handle /api/* {
+        reverse_proxy backend:3001
+    }
+    handle /socket.io/* {
+        reverse_proxy backend:3001
+    }
+    # SPA Fallback
+    handle {
+        try_files {path} /index.html
+    }
+}
+
+livekit.34.59.252.209.nip.io {
+    reverse_proxy livekit:7880
+}
